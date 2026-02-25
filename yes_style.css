@@ -1,24 +1,204 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
-    background-color: #f9e3e3;
-    font-family: 'Arial', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Fredoka', sans-serif;
+    background-color: #2c1810;
 }
 
-.container {
+/* Countdown: big centered 1... 2... 3... */
+.countdown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1em;
+    font-size: clamp(4rem, 20vw, 12rem);
+    font-weight: bold;
+    color: #fef9e7;
+    text-shadow: 0 0 30px rgba(232, 197, 71, 0.5), 0 0 60px rgba(0, 0, 0, 0.4);
+    z-index: 10;
+    transition: opacity 0.3s ease;
+}
+
+.countdown-dots {
+    font-size: 0.4em;
+    opacity: 0.9;
+    animation: blink 0.6s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.countdown.countdown-hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Curtain panels */
+.curtain {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    z-index: 5;
+    background: linear-gradient(180deg, #5c4033 0%, #3d2817 50%, #2c1810 100%);
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
+    transition: transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.curtain::before {
+    content: '🥚';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(3rem, 10vw, 6rem);
+    opacity: 0.25;
+}
+
+.curtain-right::before {
+    content: '🐔';
+}
+
+.curtain-left {
+    left: 0;
+}
+
+.curtain-right {
+    right: 0;
+}
+
+.curtain.curtain-open.curtain-left {
+    transform: translateX(-100%);
+}
+
+.curtain.curtain-open.curtain-right {
+    transform: translateX(100%);
+}
+
+/* Confetti */
+.confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -20px;
+    border-radius: 2px;
+    animation: confettiFall 4s ease-out forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Stage & reveal */
+.stage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #2c1810 0%, #1a0f0a 100%);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.reveal-content {
     text-align: center;
+    max-width: 900px;
+    animation: revealIn 0.8s ease-out 0.3s both;
 }
 
-.header_text {
-    font-size: 3em;
-    color: #d32f2f;
+@keyframes revealIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
-.gif_container img {
-    width: 100%; 
-    max-width: 500px; 
-    height: auto; 
+.reveal-title {
+    font-size: clamp(2.2rem, 8vw, 4rem);
+    font-weight: 600;
+    color: #fef9e7;
+    text-shadow: 0 0 20px rgba(232, 197, 71, 0.4);
+    margin: 0 0 8px 0;
+    animation: titleBounce 0.6s ease-out 0.5s both;
+}
+
+@keyframes titleBounce {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.08);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.reveal-subtitle {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: #e8c547;
+    margin: 0 0 24px 0;
+    font-weight: 400;
+}
+
+.video-container {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.video-container video {
+    width: 100%;
+    max-height: 50vh;
+    border-radius: 12px;
+    background: #1a0f0a;
+    border: 4px solid rgba(232, 197, 71, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.video-placeholder {
+    margin-top: 12px;
+    color: #b8860b;
+    font-size: 0.9rem;
+    opacity: 0.9;
 }
