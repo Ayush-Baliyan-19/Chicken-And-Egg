@@ -15,7 +15,6 @@
     var photoCounter = document.getElementById('photoCounter');
     var photosHint = document.getElementById('photosHint');
     var video2 = document.getElementById('video2');
-    var btnUnmuteVideo2 = document.getElementById('btnUnmuteVideo2');
 
     var steps = ['1', '2', '3'];
     var step = 0;
@@ -48,6 +47,7 @@
         curtainRight.classList.add('curtain-open');
         burstConfetti();
         if (mainVideo) {
+            mainVideo.playbackRate = 1;
             mainVideo.play().catch(function () {});
         }
     }
@@ -99,6 +99,8 @@
         if (photoIndex >= photoFiles.length) {
             showSection(sectionVideo2);
             if (video2) {
+                video2.playbackRate = 1;
+                video2.muted = false;
                 video2.play().catch(function () {});
             }
             return;
@@ -119,14 +121,6 @@
         photoImage.addEventListener('click', function (e) {
             e.stopPropagation();
             advancePhoto();
-        });
-    }
-
-    if (btnUnmuteVideo2 && video2) {
-        btnUnmuteVideo2.addEventListener('click', function () {
-            video2.muted = false;
-            video2.play().catch(function () {});
-            btnUnmuteVideo2.classList.add('hidden');
         });
     }
 
