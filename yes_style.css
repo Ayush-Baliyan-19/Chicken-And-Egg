@@ -244,6 +244,56 @@ body {
     background: linear-gradient(160deg, #2c1810 0%, #1a0f0a 100%);
 }
 
+/* Section: 4 Balloons (You are so special) */
+.section-balloons-inner {
+    background: linear-gradient(160deg, #2d1b4e 0%, #1a0f2e 50%, #0d0618 100%);
+}
+
+.balloons-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    gap: clamp(12px, 4vw, 32px);
+    margin-bottom: 24px;
+}
+
+.balloon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.balloon-item:hover {
+    transform: scale(1.05);
+}
+
+.balloon-img {
+    width: clamp(60px, 18vw, 120px);
+    height: auto;
+    display: block;
+    pointer-events: none;
+}
+
+.balloon-word {
+    font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+    color: #fef9e7;
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+.balloons-continue {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.balloons-continue.continue-btn-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* Section 2: But wait there is more... (warmer, wholesome) */
 .section-more-inner {
     background: linear-gradient(160deg, #3d2817 0%, #2c1810 50%, #1a0f0a 100%);
@@ -674,59 +724,33 @@ body {
     max-width: 320px;
 }
 
-.envelope-closed {
+.envelope-img {
+    display: block;
     width: 200px;
-    height: 120px;
-    background: linear-gradient(160deg, #f8e0e8 0%, #f0d0dc 50%, #e8c0d0 100%);
-    border: 2px solid rgba(200, 160, 180, 0.6);
-    border-radius: 4px;
+    height: auto;
+    max-height: 140px;
+    object-fit: contain;
+    transition: opacity 0.3s ease;
+}
+
+.envelope-img-closed {
     position: relative;
     z-index: 2;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    transition: transform 0.6s ease-out, opacity 0.4s ease;
-}
-
-.envelope-closed::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 2px solid rgba(180, 140, 160, 0.5);
-    border-radius: 4px;
-    pointer-events: none;
-}
-
-.envelope-wrap {
-    perspective: 400px;
-}
-
-.envelope-closed {
-    transform-origin: top center;
-}
-
-.envelope-wrap.envelope-opened .envelope-closed {
-    transform: rotateX(-110deg);
-    pointer-events: none;
-    opacity: 0.7;
 }
 
 .envelope-letter {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%) translateY(-20px);
+    position: relative;
     width: 180px;
     z-index: 1;
     opacity: 0;
+    transform: translateY(-10px);
     pointer-events: none;
-    transition: opacity 0.3s ease 0.4s, transform 0.6s ease-out 0.3s;
+    transition: opacity 0.4s ease 0.2s, transform 0.5s ease-out 0.2s;
 }
 
-.envelope-wrap.envelope-opened .envelope-letter {
+.envelope-letter.visible {
     opacity: 1;
-    transform: translateX(-50%) translateY(40px);
+    transform: translateY(20px);
     pointer-events: auto;
 }
 

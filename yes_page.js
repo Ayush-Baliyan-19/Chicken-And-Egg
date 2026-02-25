@@ -5,28 +5,17 @@
     var confettiEl = document.getElementById('confetti');
     var mainVideo = document.getElementById('mainVideo');
     var btnContinueVideo1 = document.getElementById('btnContinueVideo1');
-    var btnContinueMore = document.getElementById('btnContinueMore');
+    var btnContinueBalloons = document.getElementById('btnContinueBalloons');
     var btnContinueVideo2 = document.getElementById('btnContinueVideo2');
-    var sectionBalloon = document.getElementById('section-balloon');
     var sectionVideo1 = document.getElementById('section-video1');
-    var sectionCake = document.getElementById('section-cake');
-    var sectionMore = document.getElementById('section-more');
-    var sectionPhotos = document.getElementById('section-photos');
+    var sectionBalloons = document.getElementById('section-balloons');
     var sectionVideo2 = document.getElementById('section-video2');
     var sectionEnvelope = document.getElementById('section-envelope');
-    var balloon = document.getElementById('balloon');
-    var balloonWrap = document.getElementById('balloonWrap');
-    var burstContainer = document.getElementById('burstContainer');
+    var balloonsRow = document.getElementById('balloonsRow');
     var popSound = document.getElementById('popSound');
-    var photoImage = document.getElementById('photoImage');
-    var photoContainer = document.getElementById('photoContainer');
-    var photoCounter = document.getElementById('photoCounter');
-    var photosHint = document.getElementById('photosHint');
     var video2 = document.getElementById('video2');
     var bgMusic = document.getElementById('bgMusic');
     var btnMusicToggle = document.getElementById('btnMusicToggle');
-    var cakeImage = document.getElementById('cakeImage');
-    var btnCake = document.getElementById('btnCake');
     var envelopeWrap = document.getElementById('envelopeWrap');
     var envelopeClosed = document.getElementById('envelopeClosed');
     var envelopeLetter = document.getElementById('envelopeLetter');
@@ -36,17 +25,12 @@
 
     var steps = ['1', '2', '3'];
     var step = 0;
-    var photoIndex = 0;
-    var photoFiles = ['photos/Vishu-1.jpeg', 'photos/Vishu-2.jpeg', 'photos/Vishu-3.jpeg', 'photos/Vishu-4.jpeg', 'photos/Vishu-5.jpeg', 'photos/Vishu-6.jpeg', 'photos/Vishu-7.jpeg', 'photos/Vishu-8.jpeg'];
-    var cakeStep = 1;
-    var cakeSteps = [
-        { img: 'cake-candles.png', btn: 'Blow the Candles' },
-        { img: 'cake-smoke.gif', btn: 'Cut the Cake' },
-        { img: 'cake-cut.gif', btn: 'Special Message' }
-    ];
+    var balloonsPopped = 0;
     var envelopeOpened = false;
-    var envelopeTypingDone = false;
     var birthdayMessage = 'Happy Birthday Vishu!\n\nYou are an amazing friend and we are so grateful to have you. Wishing you a year full of joy, laughter, and all the best things. Stay awesome!\n\n— With love';
+
+    var balloonNormalSrc = './assets/balloon.png';
+    var balloonPoppedSrc = './assets/balloon-popped.png';
 
     function showSection(section) {
         var sections = document.querySelectorAll('.section');
@@ -82,58 +66,39 @@
         }
     }
 
-    /* ---------- Balloon Pop ---------- */
-    var balloonPopped = false;
-    function onBalloonClick() {
-        if (balloonPopped) return;
-        balloonPopped = true;
-        if (balloon) balloon.classList.add('popped');
-        if (balloonWrap) balloonWrap.style.pointerEvents = 'none';
-
-        if (popSound) {
-            popSound.currentTime = 0;
-            popSound.play().catch(function () {});
+    /* ---------- Countdown then curtain then Video 1 ---------- */
+    function showNextCountdown() {
+        if (step < steps.length) {
+            var numSpan = countdownEl ? countdownEl.querySelector('.countdown-num') : null;
+            if (numSpan) numSpan.textContent = steps[step];
+            if (countdownEl) countdownEl.classList.remove('countdown-hide');
+            step++;
+            setTimeout(showNextCountdown, 1000);
+        } else {
+            if (countdownEl) countdownEl.classList.add('countdown-hide');
+            setTimeout(openCurtain, 400);
         }
-
-        var burstCount = 10;
-        var colors = ['#3db8a8', '#2a9d8f', '#55efc4', '#fef9e7'];
-        for (var i = 0; i < burstCount; i++) {
-            var angle = (i / burstCount) * Math.PI * 2;
-            var dist = 120;
-            var x = Math.cos(angle) * dist;
-            var y = Math.sin(angle) * dist;
-            var p = document.createElement('div');
-            p.className = 'burst-piece';
-            p.style.background = colors[i % colors.length];
-            p.style.setProperty('--burst-pos', 'translate(' + x + 'px, ' + y + 'px)');
-            if (burstContainer) burstContainer.appendChild(p);
-            setTimeout(function (el) {
-                if (el.parentNode) el.parentNode.removeChild(el);
-            }, 600, p);
-        }
-
-        burstConfetti();
-        setTimeout(function () {
-            showSection(sectionVideo1);
-            if (mainVideo) {
-                mainVideo.playbackRate = 1;
-                mainVideo.play().catch(function () {});
-            }
-            startBgMusic();
-        }, 1500);
     }
 
-    if (balloonWrap) balloonWrap.addEventListener('click', onBalloonClick);
-    if (balloon) balloon.addEventListener('click', function (e) { e.stopPropagation(); onBalloonClick(); });
+    function openCurtain() {
+        if (curtainLeft) curtainLeft.classList.add('curtain-open');
+        if (curtainRight) curtainRight.classList.add('curtain-open');
+        burstConfetti();
+        showSection(sectionVideo1);
+        if (mainVideo) {
+            mainVideo.playbackRate = 1;
+            mainVideo.play().catch(function () {});
+        }
+        startBgMusic();
+    }
 
-    /* ---------- Video 1 Continue -> Cake ---------- */
+    setTimeout(showNextCountdown, 300);
+
+    /* ---------- Video 1: button "Wait there is more" -> Balloons ---------- */
     if (btnContinueVideo1) {
         btnContinueVideo1.addEventListener('click', function () {
             startBgMusic();
-            showSection(sectionCake);
-            cakeStep = 1;
-            if (cakeImage) cakeImage.src = cakeSteps[0].img;
-            if (btnCake) btnCake.textContent = cakeSteps[0].btn;
+            showSection(sectionBalloons);
         });
     }
 
@@ -143,77 +108,49 @@
         });
     }
 
-    /* ---------- Cake section ---------- */
-    if (btnCake) {
-        btnCake.addEventListener('click', function () {
-            if (cakeStep === 1) {
-                cakeStep = 2;
-                if (cakeImage) cakeImage.src = cakeSteps[1].img;
-                if (btnCake) btnCake.textContent = cakeSteps[1].btn;
-            } else if (cakeStep === 2) {
-                cakeStep = 3;
-                if (cakeImage) cakeImage.src = cakeSteps[2].img;
-                if (btnCake) btnCake.textContent = cakeSteps[2].btn;
-            } else if (cakeStep === 3) {
-                showSection(sectionMore);
-            }
+    /* ---------- 4 Balloons: pop individually, then Continue ---------- */
+    if (balloonsRow) {
+        var items = balloonsRow.querySelectorAll('.balloon-item');
+        items.forEach(function (item) {
+            var img = item.querySelector('.balloon-img');
+            if (!img) return;
+            item.addEventListener('click', function () {
+                if (img.getAttribute('src') === balloonPoppedSrc) return;
+                img.setAttribute('src', balloonPoppedSrc);
+                balloonsPopped++;
+                if (popSound) {
+                    popSound.currentTime = 0;
+                    popSound.play().catch(function () {});
+                }
+                if (balloonsPopped >= 4 && btnContinueBalloons) {
+                    btnContinueBalloons.classList.add('continue-btn-visible');
+                }
+            });
         });
     }
 
-    /* ---------- But wait... -> Photos ---------- */
-    if (btnContinueMore) {
-        btnContinueMore.addEventListener('click', function () {
-            showSection(sectionPhotos);
-            photoIndex = 0;
-            if (photoImage) photoImage.src = photoFiles[0];
-            if (photoCounter) photoCounter.textContent = '1 / 8';
-            if (photoContainer) photoContainer.classList.remove('photo-advance');
-            void photoContainer.offsetWidth;
-            if (photoContainer) photoContainer.classList.add('photo-advance');
-        });
-    }
-
-    /* ---------- Photos -> Video 2 ---------- */
-    function advancePhoto() {
-        photoIndex++;
-        if (photoIndex >= photoFiles.length) {
+    if (btnContinueBalloons) {
+        btnContinueBalloons.addEventListener('click', function () {
             showSection(sectionVideo2);
             if (video2) {
                 video2.playbackRate = 1;
                 video2.muted = false;
                 video2.play().catch(function () {});
             }
-            return;
-        }
-        if (photoImage) photoImage.src = photoFiles[photoIndex];
-        if (photoCounter) photoCounter.textContent = (photoIndex + 1) + ' / 8';
-        if (photoContainer) {
-            photoContainer.classList.remove('photo-advance');
-            void photoContainer.offsetWidth;
-            photoContainer.classList.add('photo-advance');
-        }
-    }
-
-    if (photoContainer) photoContainer.addEventListener('click', advancePhoto);
-    if (photoImage) {
-        photoImage.addEventListener('click', function (e) {
-            e.stopPropagation();
-            advancePhoto();
         });
     }
 
-    /* ---------- Video 2 -> Envelope ---------- */
+    /* ---------- Video 2: button "And Finally" -> Envelope ---------- */
     if (btnContinueVideo2) {
         btnContinueVideo2.addEventListener('click', function () {
             showSection(sectionEnvelope);
         });
     }
 
-    /* ---------- Envelope: open + typing (experience ends after) ---------- */
+    /* ---------- Envelope: click to open, letter out, typing ---------- */
     function typeWriter(msg, i) {
         if (i >= msg.length) {
             if (typingCursor) typingCursor.classList.add('hidden');
-            envelopeTypingDone = true;
             return;
         }
         if (letterText) letterText.textContent += msg.charAt(i);
@@ -224,13 +161,18 @@
         envelopeWrap.addEventListener('click', function () {
             if (envelopeOpened) return;
             envelopeOpened = true;
+            if (envelopeClosed) {
+                envelopeClosed.setAttribute('src', './assets/envelope-open.png');
+                envelopeClosed.classList.add('envelope-opened');
+            }
             envelopeWrap.classList.add('envelope-opened');
             if (envelopeHint) envelopeHint.style.visibility = 'hidden';
+            if (envelopeLetter) envelopeLetter.classList.add('visible');
             setTimeout(function () {
-                letterText.textContent = '';
+                if (letterText) letterText.textContent = '';
                 if (typingCursor) typingCursor.classList.remove('hidden');
                 typeWriter(birthdayMessage, 0);
-            }, 700);
+            }, 500);
         });
     }
 
@@ -248,6 +190,4 @@
             }
         });
     }
-
-    /* Start with balloon section (no countdown) */
 })();

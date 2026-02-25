@@ -17,19 +17,7 @@
 
     <div id="confetti" class="confetti" aria-hidden="true"></div>
 
-    <!-- Section 0: Balloon Pop Intro -->
-    <section id="section-balloon" class="section section-active">
-        <div class="section-balloon-bg">
-            <div class="sparkle" aria-hidden="true"></div>
-        </div>
-        <p class="balloon-intro-text">You are so...</p>
-        <div class="balloon-wrap" id="balloonWrap">
-            <div class="balloon" id="balloon" title="Tap to pop!"></div>
-        </div>
-        <div class="burst-container" id="burstContainer" aria-hidden="true"></div>
-    </section>
-
-    <!-- Section 1: Video 1 -->
+    <!-- Section 1: You came first + Video 1 -->
     <section id="section-video1" class="section">
         <div class="stage">
             <div class="reveal-content">
@@ -40,84 +28,55 @@
                         <source src="./BhaiKaBdday.mp4" type="video/mp4">
                     </video>
                 </div>
-                <button type="button" class="continue-btn" id="btnContinueVideo1">Continue</button>
+                <button type="button" class="continue-btn" id="btnContinueVideo1">Wait there is more</button>
             </div>
         </div>
     </section>
 
-    <!-- Section Cake: Let's Celebrate with a Cake -->
-    <section id="section-cake" class="section">
-        <div class="section-inner section-cake-inner">
-            <h2 class="section-cake-title">Let's Celebrate with a Cake</h2>
-            <div class="cake-wrap">
-                <img id="cakeImage" class="cake-image" src="./cake-candles.png" alt="Birthday cake">
+    <!-- Section 2: 4 balloons (You are so special) -->
+    <section id="section-balloons" class="section">
+        <div class="section-inner section-balloons-inner">
+            <div class="balloons-row" id="balloonsRow">
+                <div class="balloon-item" data-index="0">
+                    <img class="balloon-img" src="./assets/balloon.png" alt="Balloon">
+                    <span class="balloon-word">You</span>
+                </div>
+                <div class="balloon-item" data-index="1">
+                    <img class="balloon-img" src="./assets/balloon.png" alt="Balloon">
+                    <span class="balloon-word">are</span>
+                </div>
+                <div class="balloon-item" data-index="2">
+                    <img class="balloon-img" src="./assets/balloon.png" alt="Balloon">
+                    <span class="balloon-word">so</span>
+                </div>
+                <div class="balloon-item" data-index="3">
+                    <img class="balloon-img" src="./assets/balloon.png" alt="Balloon">
+                    <span class="balloon-word">special</span>
+                </div>
             </div>
-            <button type="button" class="cake-btn" id="btnCake">Blow the Candles</button>
+            <button type="button" class="continue-btn balloons-continue" id="btnContinueBalloons">Continue</button>
         </div>
     </section>
 
-    <!-- Section 2: But wait there is more... -->
-    <section id="section-more" class="section">
-        <div class="birthday-deco">
-            <span class="deco-balloon deco-balloon-1">🎈</span>
-            <span class="deco-balloon deco-balloon-2">🎈</span>
-            <span class="deco-cake">🎂</span>
-            <span class="deco-candle deco-candle-1">🕯️</span>
-            <span class="deco-candle deco-candle-2">🕯️</span>
-        </div>
-        <div class="section-inner section-more-inner">
-            <h2 class="section-more-title">But wait there is more...</h2>
-            <p class="section-more-tagline">Click to see more.</p>
-            <button type="button" class="continue-btn" id="btnContinueMore">Show me</button>
-        </div>
-    </section>
-
-    <!-- Section 3: 8 photos click-through -->
-    <section id="section-photos" class="section">
-        <div class="birthday-deco">
-            <span class="deco-balloon deco-balloon-1">🎈</span>
-            <span class="deco-balloon deco-balloon-2">🎈</span>
-            <span class="deco-balloon deco-balloon-3">🎈</span>
-            <span class="deco-cake">🎂</span>
-            <span class="deco-candle deco-candle-1">🕯️</span>
-            <span class="deco-candle deco-candle-2">🕯️</span>
-        </div>
-        <div class="section-inner section-photos-inner">
-            <p class="photos-hint" id="photosHint">Click to see the next</p>
-            <div class="photo-container" id="photoContainer">
-                <img id="photoImage" src="./photos/Vishu-1.jpeg" alt="Photo" class="photo-image">
-            </div>
-            <p class="photo-counter" id="photoCounter">1 / 8</p>
-        </div>
-    </section>
-
-    <!-- Section 4: Video 2 -->
+    <!-- Section 3: Video 2 -->
     <section id="section-video2" class="section">
-        <div class="birthday-deco">
-            <span class="deco-balloon deco-balloon-1">🎈</span>
-            <span class="deco-balloon deco-balloon-2">🎈</span>
-            <span class="deco-cake">🎂</span>
-            <span class="deco-candle deco-candle-1">🕯️</span>
-            <span class="deco-candle deco-candle-2">🕯️</span>
-        </div>
         <div class="section-inner section-video2-inner">
-            <p class="reveal-subtitle">And this one's for you</p>
             <div class="video-container">
                 <video id="video2" playsinline>
                     <source src="./HappyBirthdayVishu.mp4" type="video/mp4">
                 </video>
             </div>
-            <button type="button" class="continue-btn section-video2-continue" id="btnContinueVideo2">Special Message</button>
+            <button type="button" class="continue-btn section-video2-continue" id="btnContinueVideo2">And Finally</button>
         </div>
     </section>
 
-    <!-- Section Envelope: A Message From My Heart (last) -->
+    <!-- Section 4: Envelope + letter (last) -->
     <section id="section-envelope" class="section">
         <div class="section-inner section-envelope-inner">
             <h2 class="envelope-title">A Message From My Heart</h2>
             <p class="envelope-hint" id="envelopeHint">Tap to open</p>
             <div class="envelope-wrap" id="envelopeWrap">
-                <div class="envelope-closed" id="envelopeClosed"></div>
+                <img class="envelope-img envelope-img-closed" id="envelopeClosed" src="./assets/envelope-closed.png" alt="Envelope">
                 <div class="envelope-letter" id="envelopeLetter">
                     <div class="letter-paper">
                         <p id="letterText" class="letter-text"></p>
