@@ -44,7 +44,18 @@ I built this for **fun & learning**. If you fork or modify it:
    ```
    Optionally set the `poster` attribute for a thumbnail.
 
-3. **Open the project**  
+3. **Background music (optional)**  
+   Add a file named `bg-music.mp3` in the project root. Music starts when the user clicks **Continue** after the first video and loops. Use the speaker icon (bottom-right on the yes page) to mute/unmute.
+
+   **Mild song ideas** (royalty-free / safe to use):
+   - **Pixabay** (pixabay.com/music): search “happy birthday instrumental”, “birthday piano”, or “soft celebration”
+   - **YouTube Audio Library**: “Happy Birthday” instrumental, gentle piano or acoustic
+   - **Free Music Archive**: calm “birthday” or “celebration” tracks
+   - **Uppbeat** (uppbeat.io): free for personal use, filter by “happy” or “acoustic”
+
+   Pick something short (1–2 min) and low volume so it stays in the background.
+
+4. **Open the project**  
    Open `index.html` in a browser (or use a local server if needed for video).
 
 ---

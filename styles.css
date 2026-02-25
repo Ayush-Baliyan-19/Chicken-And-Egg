@@ -37,6 +37,60 @@ body {
     50% { transform: translateY(-12px) rotate(5deg); }
 }
 
+/* Balloons */
+.floating-balloon {
+    position: fixed;
+    font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 0;
+    animation: balloonFloat 5s ease-in-out infinite;
+}
+
+.floating-balloon-1 { top: 8%; right: 15%; animation-delay: 0.5s; }
+.floating-balloon-2 { bottom: 30%; left: 6%; animation-delay: 1.5s; }
+.floating-balloon-3 { top: 35%; right: 5%; animation-delay: 2.5s; }
+
+@keyframes balloonFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-15px) scale(1.05); }
+}
+
+/* Cake */
+.floating-cake {
+    position: fixed;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 0;
+    bottom: 15%;
+    right: 12%;
+    animation: cakeBounce 3s ease-in-out infinite;
+}
+
+@keyframes cakeBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Candles */
+.floating-candle {
+    position: fixed;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: 0;
+    animation: candleFlicker 2s ease-in-out infinite;
+}
+
+.floating-candle-1 { top: 22%; left: 10%; animation-delay: 0.2s; }
+.floating-candle-2 { bottom: 22%; right: 14%; animation-delay: 0.7s; }
+
+@keyframes candleFlicker {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.08); opacity: 1; }
+}
+
 .container {
     text-align: center;
     position: relative;
