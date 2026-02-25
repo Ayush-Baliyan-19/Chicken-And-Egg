@@ -20,7 +20,7 @@
     var steps = ['1', '2', '3'];
     var step = 0;
     var photoIndex = 0;
-    var photoFiles = ['photo1.jpg', 'photo2.jpg', 'photo3.jpg', 'photo4.jpg', 'photo5.jpg', 'photo6.jpg', 'photo7.jpg'];
+    var photoFiles = ['photos/Vishu-1.jpeg', 'photos/Vishu-2.jpeg', 'photos/Vishu-3.jpeg', 'photos/Vishu-4.jpeg', 'photos/Vishu-5.jpeg', 'photos/Vishu-6.jpeg', 'photos/Vishu-7.jpeg', 'photos/Vishu-8.jpeg'];
 
     function showSection(section) {
         var sections = document.querySelectorAll('.section');
@@ -87,7 +87,7 @@
             showSection(sectionPhotos);
             photoIndex = 0;
             if (photoImage) photoImage.src = photoFiles[0];
-            if (photoCounter) photoCounter.textContent = '1 / 7';
+            if (photoCounter) photoCounter.textContent = '1 / 8';
             if (photoContainer) photoContainer.classList.remove('photo-advance');
             void photoContainer.offsetWidth;
             if (photoContainer) photoContainer.classList.add('photo-advance');
@@ -104,7 +104,7 @@
             return;
         }
         if (photoImage) photoImage.src = photoFiles[photoIndex];
-        if (photoCounter) photoCounter.textContent = (photoIndex + 1) + ' / 7';
+        if (photoCounter) photoCounter.textContent = (photoIndex + 1) + ' / 8';
         if (photoContainer) {
             photoContainer.classList.remove('photo-advance');
             void photoContainer.offsetWidth;
