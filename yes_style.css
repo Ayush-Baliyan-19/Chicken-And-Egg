@@ -202,3 +202,186 @@ body {
     font-size: 0.9rem;
     opacity: 0.9;
 }
+
+/* Sections: one visible at a time */
+.section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.section.section-active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 2;
+}
+
+.section .stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.section-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(160deg, #2c1810 0%, #1a0f0a 100%);
+}
+
+/* Section 2: But wait there is more... (warmer, wholesome) */
+.section-more-inner {
+    background: linear-gradient(160deg, #3d2817 0%, #2c1810 50%, #1a0f0a 100%);
+}
+
+.section-more-title {
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    font-weight: 600;
+    color: #fef9e7;
+    text-align: center;
+    margin: 0 0 12px 0;
+    text-shadow: 0 0 20px rgba(232, 197, 71, 0.3);
+}
+
+.section-more-tagline {
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    color: #e8c547;
+    margin: 0 0 24px 0;
+}
+
+/* Section 3: 7 photos */
+.section-photos-inner {
+    background: linear-gradient(160deg, #3d2817 0%, #2c1810 100%);
+}
+
+.photos-hint {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    color: rgba(254, 249, 231, 0.8);
+    margin: 0 0 16px 0;
+}
+
+.photo-container {
+    max-width: 90vw;
+    max-height: 70vh;
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 4px solid rgba(232, 197, 71, 0.25);
+    transition: transform 0.2s ease;
+}
+
+.photo-container:hover {
+    transform: scale(1.02);
+}
+
+.photo-image {
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.35s ease;
+}
+
+.photo-container.photo-advance .photo-image {
+    animation: photoReveal 0.4s ease-out;
+}
+
+@keyframes photoReveal {
+    0% {
+        opacity: 0.6;
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.photo-counter {
+    font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+    color: #e8c547;
+    margin: 16px 0 0 0;
+}
+
+/* Section 4: Video 2 */
+.section-video2-inner {
+    background: linear-gradient(160deg, #3d2817 0%, #2c1810 100%);
+}
+
+.section-video2-inner .reveal-subtitle {
+    margin-bottom: 16px;
+}
+
+.unmute-btn {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 10px 20px;
+    margin-top: 12px;
+    background: rgba(232, 197, 71, 0.25);
+    color: #fef9e7;
+    border: 2px solid rgba(232, 197, 71, 0.5);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.unmute-btn:hover {
+    background: rgba(232, 197, 71, 0.4);
+    transform: scale(1.05);
+}
+
+.unmute-btn.hidden {
+    display: none;
+}
+
+/* Continue button (Video 1 and Section 2) */
+.continue-btn {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 12px 28px;
+    margin-top: 20px;
+    background: linear-gradient(180deg, #e8c547 0%, #c9a227 100%);
+    color: #2c1810;
+    border: 3px solid #8b6914;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #8b6914, 0 6px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.continue-btn.continue-btn-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.continue-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 0 #8b6914, 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+#section-more .continue-btn,
+#section-more .continue-btn.continue-btn-visible {
+    opacity: 1;
+    pointer-events: auto;
+}

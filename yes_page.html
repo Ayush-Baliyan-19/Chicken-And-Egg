@@ -17,66 +17,55 @@
 
     <div id="confetti" class="confetti" aria-hidden="true"></div>
 
-    <div class="stage" id="stage">
-        <div class="reveal-content">
-            <h1 class="reveal-title">You came first!</h1>
-            <p class="reveal-subtitle">Happy Birthday!</p>
-            <div class="video-container">
-                <video id="mainVideo" autoplay>
-                    <source src="./BhaiKaBdday.mp4" type="video/mp4">
-                </video>
+    <!-- Section 1: Video 1 -->
+    <section id="section-video1" class="section section-active">
+        <div class="stage">
+            <div class="reveal-content">
+                <h1 class="reveal-title">You came first!</h1>
+                <p class="reveal-subtitle">Happy Birthday!</p>
+                <div class="video-container">
+                    <video id="mainVideo" playsinline>
+                        <source src="./BhaiKaBdday.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <button type="button" class="continue-btn" id="btnContinueVideo1">Continue</button>
             </div>
         </div>
-    </div>
+    </section>
 
-    <script>
-        (function () {
-            var countdownEl = document.getElementById('countdown');
-            var curtainLeft = document.getElementById('curtainLeft');
-            var curtainRight = document.getElementById('curtainRight');
-            var confettiEl = document.getElementById('confetti');
-            var steps = ['1', '2', '3'];
-            var step = 0;
+    <!-- Section 2: But wait there is more... -->
+    <section id="section-more" class="section">
+        <div class="section-inner section-more-inner">
+            <h2 class="section-more-title">But wait there is more...</h2>
+            <p class="section-more-tagline">Click to see more.</p>
+            <button type="button" class="continue-btn" id="btnContinueMore">Show me</button>
+        </div>
+    </section>
 
-            function showNext() {
-                if (step < steps.length) {
-                    var numSpan = countdownEl.querySelector('.countdown-num');
-                    if (numSpan) numSpan.textContent = steps[step];
-                    countdownEl.classList.remove('countdown-hide');
-                    step++;
-                    setTimeout(showNext, 1000);
-                } else {
-                    countdownEl.classList.add('countdown-hide');
-                    setTimeout(openCurtain, 400);
-                }
-            }
+    <!-- Section 3: 7 photos click-through -->
+    <section id="section-photos" class="section">
+        <div class="section-inner section-photos-inner">
+            <p class="photos-hint" id="photosHint">Click to see the next</p>
+            <div class="photo-container" id="photoContainer">
+                <img id="photoImage" src="./photo1.jpg" alt="Photo" class="photo-image">
+            </div>
+            <p class="photo-counter" id="photoCounter">1 / 7</p>
+        </div>
+    </section>
 
-            function openCurtain() {
-                curtainLeft.classList.add('curtain-open');
-                curtainRight.classList.add('curtain-open');
-                burstConfetti();
-            }
+    <!-- Section 4: Video 2 -->
+    <section id="section-video2" class="section">
+        <div class="section-inner section-video2-inner">
+            <p class="reveal-subtitle">And this one's for you</p>
+            <div class="video-container">
+                <video id="video2" playsinline muted>
+                    <source src="./video2.mp4" type="video/mp4">
+                </video>
+            </div>
+            <button type="button" class="unmute-btn" id="btnUnmuteVideo2">Play sound</button>
+        </div>
+    </section>
 
-            function burstConfetti() {
-                var colors = ['#f9e076', '#e8c547', '#c9a227', '#ff9f43', '#ff6b6b', '#a29bfe', '#55efc4', '#fd79a8'];
-                var count = 60;
-                for (var i = 0; i < count; i++) {
-                    var c = document.createElement('div');
-                    c.className = 'confetti-piece';
-                    c.style.left = Math.random() * 100 + '%';
-                    c.style.animationDelay = Math.random() * 0.5 + 's';
-                    c.style.animationDuration = (2 + Math.random() * 2) + 's';
-                    c.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    c.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
-                    confettiEl.appendChild(c);
-                    setTimeout(function (el) {
-                        if (el.parentNode) el.parentNode.removeChild(el);
-                    }, 4000 + Math.random() * 1000, c);
-                }
-            }
-
-            setTimeout(showNext, 300);
-        })();
-    </script>
+    <script src="./yes_page.js"></script>
 </body>
 </html>
