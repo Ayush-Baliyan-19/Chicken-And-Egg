@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Message From My Heart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./yes_style.css">
+    <style>
+        /* Floating hearts background */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 36px;
+            opacity: 0.45;
+            animation: floatHeart 15s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+        }
+
+        @keyframes floatHeart {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-30px) rotate(10deg) scale(1.1); }
+            50% { transform: translateY(-15px) rotate(-5deg) scale(0.95); }
+            75% { transform: translateY(-40px) rotate(5deg) scale(1.05); }
+        }
+
+        /* Sparkles container */
+        .sparkles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+            animation: sparkleFloat 1.2s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: scale(0.3) translateY(-80px) rotate(180deg); }
+        }
+
+        /* Main container */
+        .envelope-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .envelope-title {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            font-weight: 600;
+            color: #fef9e7;
+            text-align: center;
+            margin: 0 0 15px 0;
+            text-shadow: 0 0 20px rgba(232, 197, 71, 0.4);
+            transition: opacity 0.5s ease;
+        }
+
+        .envelope-title.hidden {
+            opacity: 0;
+        }
+
+        .envelope-hint {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: rgba(254, 249, 231, 0.85);
+            margin: 0 0 30px 0;
+            animation: hintPulse 2s ease-in-out infinite;
+            transition: opacity 0.5s ease;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.85; }
+            50% { opacity: 1; }
+        }
+
+        .envelope-hint.hidden {
+            opacity: 0;
+        }
+
+        /* Big envelope in center */
+        .envelope-wrap {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .envelope-wrap:hover:not(.opened) {
+            transform: scale(1.05);
+        }
+
+        .envelope-wrap.opened {
+            pointer-events: none;
+        }
+
+        .envelope-img {
+            width: clamp(250px, 60vw, 350px);
+            height: auto;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+            transition: all 0.5s ease;
+        }
+
+        .envelope-wrap:hover:not(.opened) .envelope-img {
+            filter: drop-shadow(0 15px 40px rgba(232, 197, 71, 0.4));
+        }
+
+        .envelope-wrap.opening .envelope-img {
+            animation: envelopeShake 0.5s ease-in-out;
+        }
+
+        @keyframes envelopeShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        .envelope-wrap.opened .envelope-img {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        /* Full screen letter canvas overlay */
+        .letter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .letter-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .letter-canvas {
+            background: linear-gradient(180deg, #fffef9 0%, #faf6ed 100%);
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 5px 20px rgba(0,0,0,0.2);
+            border: 1px solid rgba(200, 180, 160, 0.4);
+            position: relative;
+            transform: translateY(100vh) scale(0.8);
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            margin-top: 60px;
+        }
+
+        .letter-overlay.visible .letter-canvas {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Golden accent bar at top */
+        .letter-canvas::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #e8c547, #f5d76e, #e8c547);
+            border-radius: 12px 12px 0 0;
+        }
+
+        /* Flowers pinned above letter */
+        .letter-flowers {
+            position: absolute;
+            top: -55px;
+            left: 50%;
+            transform: translateX(-50%) scale(0) rotate(-15deg);
+            width: clamp(100px, 28vw, 140px);
+            height: auto;
+            opacity: 0;
+            z-index: 10;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.25));
+        }
+
+        .letter-flowers.visible {
+            animation: flowersPopIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes flowersPopIn {
+            0% { opacity: 0; transform: translateX(-50%) scale(0) rotate(-15deg); }
+            60% { opacity: 1; transform: translateX(-50%) scale(1.15) rotate(5deg); }
+            100% { opacity: 1; transform: translateX(-50%) scale(1) rotate(0deg); }
+        }
+
+        .letter-flowers.bounce {
+            animation: flowersPopIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                       flowersBounce 3s ease-in-out 0.7s infinite;
+        }
+
+        @keyframes flowersBounce {
+            0%, 100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+            50% { transform: translateX(-50%) scale(1.05) rotate(2deg); }
+        }
+
+        /* Letter content */
+        .letter-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px clamp(20px, 5vw, 35px) 25px;
+            border-radius: 12px;
+        }
+
+        .letter-text {
+            font-family: 'Caveat', cursive;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            line-height: 1.55;
+            color: #2c1810;
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            animation: cursorBlink 0.8s step-end infinite;
+            color: #c9a227;
+            font-weight: bold;
+        }
+
+        .typing-cursor.hidden {
+            display: none;
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Heart at the end */
+        .letter-heart {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-top: 20px;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .letter-heart.visible {
+            animation: heartReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes heartReveal {
+            0% { opacity: 0; transform: scale(0) rotate(-20deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        .letter-heart.pulse {
+            animation: heartReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                       heartPulse 1.2s ease-in-out 0.6s infinite;
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    <div class="sparkles" id="sparkles"></div>
+
+    <!-- Initial envelope view -->
+    <section id="section-envelope" class="section section-active">
+        <div class="section-inner section-envelope-inner">
+            <div class="envelope-container">
+                <h2 class="envelope-title" id="envelopeTitle">A Message From My Heart</h2>
+                <p class="envelope-hint" id="envelopeHint">Tap to open</p>
+
+                <div class="envelope-wrap" id="envelopeWrap">
+                    <img class="envelope-img" id="envelopeImg" src="./assets/envelope-closed.png" alt="Envelope">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Full screen letter overlay -->
+    <div class="letter-overlay" id="letterOverlay">
+        <div class="letter-canvas" id="letterCanvas">
+            <img class="letter-flowers" id="letterFlowers" src="./assets/flowers.png" alt="Flowers">
+            <div class="letter-content">
+                <p id="letterText" class="letter-text"></p>
+                <span class="typing-cursor" id="typingCursor">|</span>
+                <div class="letter-heart" id="letterHeart">💛</div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="./assets/bg-music.webm" type="audio/webm">
+    </audio>
+    <button type="button" class="music-toggle" id="btnMusicToggle" title="Toggle music" aria-label="Toggle background music">🔊</button>
+
+    <script>
+        (function () {
+            var envelopeWrap = document.getElementById('envelopeWrap');
+            var envelopeImg = document.getElementById('envelopeImg');
+            var envelopeTitle = document.getElementById('envelopeTitle');
+            var envelopeHint = document.getElementById('envelopeHint');
+            var letterOverlay = document.getElementById('letterOverlay');
+            var letterFlowers = document.getElementById('letterFlowers');
+            var letterText = document.getElementById('letterText');
+            var typingCursor = document.getElementById('typingCursor');
+            var letterHeart = document.getElementById('letterHeart');
+            var bgMusic = document.getElementById('bgMusic');
+            var btnMusicToggle = document.getElementById('btnMusicToggle');
+            var floatingHeartsContainer = document.getElementById('floatingHearts');
+            var sparklesContainer = document.getElementById('sparkles');
+
+            var envelopeOpened = false;
+            var birthdayMessage = 'Dear Vishu ♥️\n\nHappy Birthday!\nI hope you\'ve liked everything so far. I can already imagine you giggling, and that makes me smile.\n\nI hope you receive all the happiness you truly deserve — all the love, care, attention, affection, recognition, and respect. May all your dreams come true, and may your life be filled with endless joy and success. I hope you continue to grow, shine brighter each day, and have an even more beautiful future ahead.\n\nI really wish I could be there to celebrate your special day with you. I regret not being there, but as you know, there are certain restrictions. Still, I hope you liked my surprise.\n\nOnce again, Happy 23rd Birthday, cutie!\n🥂 Cheers to you and the amazing year ahead!\n\nWith love,\nAkshita\n\n~ Creativity and coding by Ayush';
+
+            var sparkleColors = ['#e8c547', '#f5d76e', '#fef9e7', '#ffb6c1', '#ffd700', '#ffe4b5'];
+
+            // Create floating hearts
+            function createFloatingHearts() {
+                var hearts = ['💛', '✨', '💫', '🤍'];
+                var positions = [
+                    { x: 5, y: 15 }, { x: 8, y: 50 }, { x: 3, y: 80 },
+                    { x: 88, y: 20 }, { x: 92, y: 55 }, { x: 85, y: 85 },
+                    { x: 20, y: 8 }, { x: 75, y: 5 },
+                    { x: 15, y: 90 }, { x: 80, y: 92 }
+                ];
+
+                positions.forEach(function(pos, i) {
+                    var heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.textContent = hearts[i % hearts.length];
+                    heart.style.left = pos.x + '%';
+                    heart.style.top = pos.y + '%';
+                    heart.style.animationDelay = (i * 1.5) + 's';
+                    heart.style.animationDuration = (14 + Math.random() * 6) + 's';
+                    floatingHeartsContainer.appendChild(heart);
+                });
+            }
+
+            // Create sparkles burst
+            function createSparkles(x, y, count) {
+                for (var i = 0; i < count; i++) {
+                    var sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = (x + (Math.random() - 0.5) * 150) + 'px';
+                    sparkle.style.top = (y + (Math.random() - 0.5) * 150) + 'px';
+                    sparkle.style.backgroundColor = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+                    sparkle.style.width = (5 + Math.random() * 10) + 'px';
+                    sparkle.style.height = sparkle.style.width;
+                    sparkle.style.animationDuration = (0.6 + Math.random() * 0.6) + 's';
+                    sparklesContainer.appendChild(sparkle);
+
+                    setTimeout(function(el) {
+                        return function() { el.remove(); };
+                    }(sparkle), 1200);
+                }
+            }
+
+            // Typewriter effect
+            function typeWriter(msg, i) {
+                if (i >= msg.length) {
+                    if (typingCursor) typingCursor.classList.add('hidden');
+                    // Show heart after typing
+                    setTimeout(function() {
+                        letterHeart.classList.add('visible');
+                        setTimeout(function() {
+                            letterHeart.classList.add('pulse');
+                        }, 600);
+                    }, 300);
+                    return;
+                }
+                if (letterText) letterText.textContent += msg.charAt(i);
+                setTimeout(function () { typeWriter(msg, i + 1); }, 40);
+            }
+
+            // Initialize
+            createFloatingHearts();
+
+            // Start background music
+            bgMusic.volume = 0.4;
+            bgMusic.play().catch(function () {});
+
+            // Envelope click handler
+            if (envelopeWrap) {
+                envelopeWrap.addEventListener('click', function () {
+                    if (envelopeOpened) return;
+                    envelopeOpened = true;
+
+                    // Sparkles burst
+                    var rect = envelopeWrap.getBoundingClientRect();
+                    createSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, 25);
+
+                    // Hide title and hint
+                    envelopeTitle.classList.add('hidden');
+                    envelopeHint.classList.add('hidden');
+
+                    // Shake envelope
+                    envelopeWrap.classList.add('opening');
+
+                    setTimeout(function() {
+                        // Change to open envelope then fade out
+                        envelopeImg.src = './assets/envelope-open.png';
+                        envelopeWrap.classList.remove('opening');
+                        envelopeWrap.classList.add('opened');
+
+                        // Show letter overlay
+                        setTimeout(function() {
+                            letterOverlay.classList.add('visible');
+
+                            // More sparkles
+                            createSparkles(window.innerWidth / 2, window.innerHeight / 2, 20);
+
+                            // Show flowers after canvas appears
+                            setTimeout(function() {
+                                letterFlowers.classList.add('visible');
+
+                                // Sparkles around flowers
+                                var flowerRect = letterFlowers.getBoundingClientRect();
+                                createSparkles(flowerRect.left + flowerRect.width / 2, flowerRect.top + flowerRect.height / 2, 15);
+
+                                setTimeout(function() {
+                                    letterFlowers.classList.add('bounce');
+                                }, 700);
+
+                                // Start typing after flowers appear
+                                setTimeout(function() {
+                                    letterText.textContent = '';
+                                    typingCursor.classList.remove('hidden');
+                                    typeWriter(birthdayMessage, 0);
+                                }, 500);
+                            }, 600);
+                        }, 300);
+                    }, 500);
+                });
+            }
+
+            // Music toggle
+            if (btnMusicToggle && bgMusic) {
+                btnMusicToggle.addEventListener('click', function () {
+                    if (bgMusic.paused) {
+                        bgMusic.play().catch(function () {});
+                        btnMusicToggle.textContent = '🔊';
+                        btnMusicToggle.classList.remove('muted');
+                    } else {
+                        bgMusic.pause();
+                        btnMusicToggle.textContent = '🔇';
+                        btnMusicToggle.classList.add('muted');
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

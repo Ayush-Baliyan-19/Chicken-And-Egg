@@ -34,5 +34,58 @@
         </div>
     </div>
     <script src="script.js"></script>
+
+    <audio id="bgMusic" loop>
+        <source src="./assets/bg-music.webm" type="audio/webm">
+    </audio>
+    <button type="button" class="music-toggle" id="btnMusicToggle" title="Toggle music" aria-label="Toggle background music">🔊</button>
+
+    <script>
+        (function() {
+            var bgMusic = document.getElementById('bgMusic');
+            var btnMusicToggle = document.getElementById('btnMusicToggle');
+
+            // Restore music position from localStorage
+            var savedTime = parseFloat(localStorage.getItem('bgMusicTime')) || 0;
+            var wasMuted = localStorage.getItem('bgMusicMuted') === 'true';
+
+            bgMusic.volume = 0.4;
+            bgMusic.currentTime = savedTime;
+
+            if (!wasMuted) {
+                bgMusic.play().catch(function() {});
+            } else {
+                btnMusicToggle.textContent = '🔇';
+                btnMusicToggle.classList.add('muted');
+            }
+
+            // Save music position periodically
+            setInterval(function() {
+                if (!bgMusic.paused) {
+                    localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                }
+            }, 500);
+
+            // Save position before leaving page
+            window.addEventListener('beforeunload', function() {
+                localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                localStorage.setItem('bgMusicMuted', bgMusic.paused);
+            });
+
+            btnMusicToggle.addEventListener('click', function() {
+                if (bgMusic.paused) {
+                    bgMusic.play().catch(function() {});
+                    btnMusicToggle.textContent = '🔊';
+                    btnMusicToggle.classList.remove('muted');
+                    localStorage.setItem('bgMusicMuted', 'false');
+                } else {
+                    bgMusic.pause();
+                    btnMusicToggle.textContent = '🔇';
+                    btnMusicToggle.classList.add('muted');
+                    localStorage.setItem('bgMusicMuted', 'true');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

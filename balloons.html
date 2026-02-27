@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You are so special!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./yes_style.css">
+    <style>
+        /* Floating hearts background */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 36px;
+            opacity: 0.45;
+            animation: floatHeart 15s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+        }
+
+        @keyframes floatHeart {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translateY(-30px) rotate(10deg) scale(1.1);
+            }
+            50% {
+                transform: translateY(-15px) rotate(-5deg) scale(0.95);
+            }
+            75% {
+                transform: translateY(-40px) rotate(5deg) scale(1.05);
+            }
+        }
+
+        .balloons-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .balloon-hint {
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            color: rgba(254, 249, 231, 0.9);
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(232, 197, 71, 0.3);
+            animation: hintPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
+        }
+
+        .balloon-stage {
+            position: relative;
+            width: clamp(240px, 60vw, 360px);
+            height: clamp(310px, 75vw, 460px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            /* Subtle glow around balloon area */
+            filter: drop-shadow(0 0 30px rgba(232, 197, 71, 0.15));
+        }
+
+        .balloon-stage:hover .balloon-img:not(.popping) {
+            animation-duration: 1s;
+        }
+
+        /* Text behind balloon */
+        .balloon-word {
+            position: absolute;
+            font-size: clamp(3rem, 10vw, 5rem);
+            font-weight: 600;
+            color: #fef9e7;
+            text-shadow: 0 0 30px rgba(232, 197, 71, 0.6), 0 0 60px rgba(232, 197, 71, 0.3);
+            z-index: 1;
+            opacity: 0;
+            transform: scale(0.3) rotate(-10deg);
+        }
+
+        .balloon-word.revealed {
+            animation: wordPopIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes wordPopIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-5deg);
+                filter: blur(4px);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.15) rotate(2deg);
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+                filter: blur(0);
+            }
+        }
+
+        /* Balloon image on top */
+        .balloon-img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 2;
+            transition: transform 0.2s ease;
+            animation: gentleFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0) rotate(-0.5deg); }
+            50% { transform: translateY(-8px) rotate(0.5deg); }
+        }
+
+        /* Popping animation: show popped image then zoom out */
+        .balloon-img.popping {
+            animation: popAndZoom 0.6s ease-out forwards;
+        }
+
+        @keyframes popAndZoom {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.2);
+                opacity: 0;
+            }
+        }
+
+        /* Revealed words display */
+        .revealed-words {
+            display: flex;
+            gap: clamp(10px, 3vw, 20px);
+            margin-top: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0 20px;
+        }
+
+        .revealed-word-item {
+            font-size: clamp(1.8rem, 6vw, 3rem);
+            font-weight: 600;
+            color: #e8c547;
+            opacity: 0;
+            transform: translateY(20px) scale(0.7);
+            text-shadow: 0 0 15px rgba(232, 197, 71, 0.4);
+        }
+
+        .revealed-word-item.show {
+            animation: wordBounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        @keyframes wordBounceIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.7);
+                filter: blur(2px);
+            }
+            70% {
+                opacity: 1;
+                transform: translateY(-5px) scale(1.05);
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        /* Gentle glow pulse after all words revealed */
+        .revealed-word-item.show.glow {
+            animation: wordBounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                       gentleGlow 1.5s ease-in-out 0.6s infinite;
+        }
+
+        @keyframes gentleGlow {
+            0%, 100% {
+                text-shadow: 0 0 15px rgba(232, 197, 71, 0.4);
+            }
+            50% {
+                text-shadow: 0 0 25px rgba(232, 197, 71, 0.8), 0 0 40px rgba(232, 197, 71, 0.4);
+            }
+        }
+
+        /* Sparkle effect container */
+        .sparkles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+            animation: sparkleFloat 1.2s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                opacity: 1;
+                transform: scale(1) translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.3) translateY(-80px) rotate(180deg);
+            }
+        }
+
+        /* Continue button */
+        .balloons-continue {
+            margin-top: 30px;
+        }
+
+        .balloon-stage.hidden {
+            display: none;
+        }
+
+        .balloon-hint.hidden {
+            visibility: hidden;
+        }
+
+        /* Heart decoration after reveal */
+        .heart-decoration {
+            font-size: clamp(2.5rem, 7vw, 4rem);
+            margin-top: 25px;
+            opacity: 0;
+            animation: heartAppear 0.8s ease-out 0.5s forwards;
+        }
+
+        @keyframes heartAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(-30deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.3) rotate(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .heart-decoration.pulse {
+            animation: heartAppear 0.8s ease-out forwards,
+                       heartPulse 1.2s ease-in-out 0.8s infinite;
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    <div class="sparkles" id="sparkles"></div>
+    <section id="section-balloons" class="section section-active">
+        <div class="section-inner section-balloons-inner">
+            <div class="balloons-container">
+                <p class="balloon-hint" id="balloonHint">Tap the balloon to pop it!</p>
+
+                <div class="balloon-stage" id="balloonStage">
+                    <span class="balloon-word" id="balloonWord"></span>
+                    <img class="balloon-img" id="balloonImg" src="./assets/balloon.png" alt="Balloon">
+                </div>
+
+                <div class="revealed-words" id="revealedWords">
+                    <span class="revealed-word-item" data-index="0">You</span>
+                    <span class="revealed-word-item" data-index="1">are</span>
+                    <span class="revealed-word-item" data-index="2">so</span>
+                    <span class="revealed-word-item" data-index="3">special!</span>
+                </div>
+
+                <button type="button" class="continue-btn balloons-continue" id="btnContinue" onclick="goToNext()">Continue</button>
+            </div>
+        </div>
+    </section>
+
+    <audio id="popSound">
+        <source src="./pop.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgMusic" loop>
+        <source src="./assets/bg-music.webm" type="audio/webm">
+    </audio>
+    <button type="button" class="music-toggle" id="btnMusicToggle" title="Toggle music" aria-label="Toggle background music">🔊</button>
+
+    <script>
+        (function () {
+            var balloonStage = document.getElementById('balloonStage');
+            var balloonImg = document.getElementById('balloonImg');
+            var balloonWord = document.getElementById('balloonWord');
+            var balloonHint = document.getElementById('balloonHint');
+            var btnContinue = document.getElementById('btnContinue');
+            var popSound = document.getElementById('popSound');
+            var bgMusic = document.getElementById('bgMusic');
+            var btnMusicToggle = document.getElementById('btnMusicToggle');
+            var revealedWords = document.getElementById('revealedWords');
+            var sparklesContainer = document.getElementById('sparkles');
+            var floatingHeartsContainer = document.getElementById('floatingHearts');
+            var balloonsContainer = document.querySelector('.balloons-container');
+
+            var words = ['You', 'are', 'so', 'special!'];
+            // Warm, heartfelt sparkle colors - golds, soft pinks, creams
+            var sparkleColors = ['#e8c547', '#f5d76e', '#fef9e7', '#ffb6c1', '#ffd700', '#ffe4b5'];
+            var currentIndex = 0;
+            var isAnimating = false;
+
+            var balloonSrc = './assets/balloon.png';
+            var balloonPoppedSrc = './assets/balloon-popped.png';
+
+            // Create floating hearts in background - positioned at edges
+            function createFloatingHearts() {
+                var hearts = ['💛', '✨', '💫', '🤍'];
+                var positions = [
+                    // Left edge
+                    { x: 5, y: 15 }, { x: 8, y: 50 }, { x: 3, y: 80 },
+                    // Right edge
+                    { x: 88, y: 20 }, { x: 92, y: 55 }, { x: 85, y: 85 },
+                    // Top corners
+                    { x: 20, y: 8 }, { x: 75, y: 5 },
+                    // Bottom corners
+                    { x: 15, y: 90 }, { x: 80, y: 92 }
+                ];
+
+                positions.forEach(function(pos, i) {
+                    var heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.textContent = hearts[i % hearts.length];
+                    heart.style.left = pos.x + '%';
+                    heart.style.top = pos.y + '%';
+                    heart.style.animationDelay = (i * 1.5) + 's';
+                    heart.style.animationDuration = (14 + Math.random() * 6) + 's';
+                    floatingHeartsContainer.appendChild(heart);
+                });
+            }
+
+            // Create sparkles burst effect
+            function createSparkles(x, y, count) {
+                for (var i = 0; i < count; i++) {
+                    var sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
+                    sparkle.style.top = (y + (Math.random() - 0.5) * 100) + 'px';
+                    sparkle.style.backgroundColor = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+                    sparkle.style.width = (5 + Math.random() * 10) + 'px';
+                    sparkle.style.height = sparkle.style.width;
+                    sparkle.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
+                    sparklesContainer.appendChild(sparkle);
+
+                    // Remove after animation
+                    setTimeout(function(el) {
+                        return function() { el.remove(); };
+                    }(sparkle), 1000);
+                }
+            }
+
+            // Add heart decoration after all words revealed
+            function addHeartDecoration() {
+                var heartDiv = document.createElement('div');
+                heartDiv.className = 'heart-decoration';
+                heartDiv.textContent = '💛';
+                balloonsContainer.insertBefore(heartDiv, btnContinue);
+                setTimeout(function() {
+                    heartDiv.classList.add('pulse');
+                }, 800);
+            }
+
+            // Initialize floating hearts
+            createFloatingHearts();
+
+            // Start background music
+            bgMusic.volume = 0.4;
+            bgMusic.play().catch(function () {});
+
+            // Set first word
+            balloonWord.textContent = words[currentIndex];
+
+            balloonStage.addEventListener('click', function (e) {
+                if (isAnimating || currentIndex >= words.length) return;
+                isAnimating = true;
+
+                // Play pop sound
+                if (popSound) {
+                    popSound.currentTime = 0;
+                    popSound.play().catch(function () {});
+                }
+
+                // Create sparkles at click position
+                var rect = balloonStage.getBoundingClientRect();
+                createSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, 15);
+
+                // Change to popped balloon image and start zoom out animation
+                balloonImg.src = balloonPoppedSrc;
+                balloonImg.classList.add('popping');
+
+                // Reveal the word behind
+                balloonWord.classList.add('revealed');
+
+                // Show word in the bottom row
+                var wordItem = revealedWords.querySelector('[data-index="' + currentIndex + '"]');
+                if (wordItem) {
+                    setTimeout(function () {
+                        wordItem.classList.add('show');
+                    }, 300);
+                }
+
+                // After animation, prepare next balloon or show continue
+                setTimeout(function () {
+                    currentIndex++;
+
+                    if (currentIndex >= words.length) {
+                        // All done - hide balloon stage, show continue
+                        balloonStage.classList.add('hidden');
+                        balloonHint.classList.add('hidden');
+                        btnContinue.classList.add('continue-btn-visible');
+
+                        // Add gentle glow to all revealed words
+                        var allWords = revealedWords.querySelectorAll('.revealed-word-item.show');
+                        allWords.forEach(function(word, i) {
+                            setTimeout(function() {
+                                word.classList.add('glow');
+                            }, i * 100);
+                        });
+
+                        // Final sparkle burst celebration
+                        setTimeout(function() {
+                            for (var i = 0; i < 3; i++) {
+                                setTimeout(function() {
+                                    createSparkles(window.innerWidth / 2, window.innerHeight / 2, 20);
+                                }, i * 200);
+                            }
+                        }, 300);
+
+                        // Add heart decoration
+                        setTimeout(function() {
+                            addHeartDecoration();
+                        }, 600);
+                    } else {
+                        // Reset for next balloon - wait for word to hide first
+                        balloonWord.classList.remove('revealed');
+
+                        setTimeout(function() {
+                            balloonWord.textContent = words[currentIndex];
+                            balloonImg.classList.remove('popping');
+                            balloonImg.src = balloonSrc;
+                            isAnimating = false;
+                        }, 100);
+                        return;
+                    }
+
+                    isAnimating = false;
+                }, 700);
+            });
+
+            if (btnMusicToggle && bgMusic) {
+                btnMusicToggle.addEventListener('click', function () {
+                    if (bgMusic.paused) {
+                        bgMusic.play().catch(function () {});
+                        btnMusicToggle.textContent = '🔊';
+                        btnMusicToggle.classList.remove('muted');
+                    } else {
+                        bgMusic.pause();
+                        btnMusicToggle.textContent = '🔇';
+                        btnMusicToggle.classList.add('muted');
+                    }
+                });
+            }
+        })();
+
+        function goToNext() {
+            window.location.href = 'video2.html';
+        }
+    </script>
+</body>
+</html>

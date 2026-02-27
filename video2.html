@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Message</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./yes_style.css">
+</head>
+<body>
+    <section id="section-video2" class="section section-active">
+        <div class="section-inner section-video2-inner">
+            <div class="video-container">
+                <video id="video2" playsinline>
+                    <source src="./HappyBirthdayVishu.mp4" type="video/mp4">
+                </video>
+            </div>
+            <button type="button" class="continue-btn section-video2-continue" id="btnContinue" onclick="goToNext()">And Finally</button>
+        </div>
+    </section>
+
+    <script>
+        (function () {
+            var video2 = document.getElementById('video2');
+            var btnContinue = document.getElementById('btnContinue');
+
+            // Auto-play video
+            if (video2) {
+                video2.playbackRate = 1;
+                video2.muted = false;
+                video2.play().catch(function () {});
+
+                // Show continue button when video ends
+                video2.addEventListener('ended', function() {
+                    if (btnContinue) btnContinue.classList.add('continue-btn-visible');
+                });
+            }
+        })();
+
+        function goToNext() {
+            window.location.href = 'envelope.html';
+        }
+    </script>
+</body>
+</html>

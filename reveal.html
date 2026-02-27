@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>And the answer is...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./yes_style.css">
+</head>
+<body>
+    <div id="countdown" class="countdown"><span class="countdown-num">1</span><span class="countdown-dots">...</span></div>
+
+    <div class="curtain curtain-left" id="curtainLeft"></div>
+    <div class="curtain curtain-right" id="curtainRight"></div>
+
+    <div id="confetti" class="confetti" aria-hidden="true"></div>
+
+    <section id="section-video1" class="section">
+        <div class="stage">
+            <div class="reveal-content">
+                <h1 class="reveal-title">You came first!</h1>
+                <p class="reveal-subtitle">Happy Birthday!</p>
+                <div class="video-container">
+                    <video id="mainVideo" playsinline>
+                        <source src="./BhaiKaBdday.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <button type="button" class="continue-btn" id="btnContinue" onclick="goToNext()">Wait there is more</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        (function () {
+            var countdownEl = document.getElementById('countdown');
+            var curtainLeft = document.getElementById('curtainLeft');
+            var curtainRight = document.getElementById('curtainRight');
+            var confettiEl = document.getElementById('confetti');
+            var mainVideo = document.getElementById('mainVideo');
+            var btnContinue = document.getElementById('btnContinue');
+
+            var steps = ['1', '2', '3'];
+            var step = 0;
+
+            function burstConfetti() {
+                var colors = ['#f9e076', '#e8c547', '#c9a227', '#ff9f43', '#ff6b6b', '#a29bfe', '#55efc4', '#fd79a8'];
+                var count = 60;
+                for (var i = 0; i < count; i++) {
+                    var c = document.createElement('div');
+                    c.className = 'confetti-piece';
+                    c.style.left = Math.random() * 100 + '%';
+                    c.style.animationDelay = Math.random() * 0.5 + 's';
+                    c.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    c.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+                    confettiEl.appendChild(c);
+                    setTimeout(function (el) {
+                        if (el.parentNode) el.parentNode.removeChild(el);
+                    }, 4000 + Math.random() * 1000, c);
+                }
+            }
+
+            function showNextCountdown() {
+                if (step < steps.length) {
+                    var numSpan = countdownEl ? countdownEl.querySelector('.countdown-num') : null;
+                    if (numSpan) numSpan.textContent = steps[step];
+                    if (countdownEl) countdownEl.classList.remove('countdown-hide');
+                    step++;
+                    setTimeout(showNextCountdown, 1000);
+                } else {
+                    if (countdownEl) countdownEl.classList.add('countdown-hide');
+                    setTimeout(openCurtain, 400);
+                }
+            }
+
+            function openCurtain() {
+                if (curtainLeft) curtainLeft.classList.add('curtain-open');
+                if (curtainRight) curtainRight.classList.add('curtain-open');
+                burstConfetti();
+                document.getElementById('section-video1').classList.add('section-active');
+                if (mainVideo) {
+                    mainVideo.playbackRate = 1;
+                    mainVideo.play().catch(function () {});
+                }
+            }
+
+            setTimeout(showNextCountdown, 300);
+
+            if (mainVideo) {
+                mainVideo.addEventListener('ended', function () {
+                    if (btnContinue) btnContinue.classList.add('continue-btn-visible');
+                });
+            }
+        })();
+
+        function goToNext() {
+            window.location.href = 'balloons.html';
+        }
+    </script>
+</body>
+</html>
