@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memories</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./yes_style.css">
+    <style>
+        /* Floating hearts background */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 36px;
+            opacity: 0.45;
+            animation: floatHeart 15s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+        }
+
+        @keyframes floatHeart {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-30px) rotate(10deg) scale(1.1); }
+            50% { transform: translateY(-15px) rotate(-5deg) scale(0.95); }
+            75% { transform: translateY(-40px) rotate(5deg) scale(1.05); }
+        }
+
+        /* Sparkles container */
+        .sparkles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+            animation: sparkleFloat 1.2s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: scale(0.3) translateY(-80px) rotate(180deg); }
+        }
+
+        /* Gallery container */
+        .gallery-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .gallery-title {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            font-weight: 600;
+            color: #fef9e7;
+            text-align: center;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 20px rgba(232, 197, 71, 0.4);
+        }
+
+        .gallery-hint {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: rgba(254, 249, 231, 0.85);
+            margin: 0 0 20px 0;
+            animation: hintPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.85; }
+            50% { opacity: 1; }
+        }
+
+        /* Photo frame */
+        .photo-frame {
+            position: relative;
+            width: clamp(280px, 80vw, 400px);
+            height: clamp(350px, 100vw, 500px);
+            cursor: pointer;
+            perspective: 1000px;
+        }
+
+        .photo-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 4px solid rgba(232, 197, 71, 0.3);
+            background: #1a1a2e;
+            opacity: 0;
+            transform: scale(0.8) rotateY(-10deg);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .photo-card.active {
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+            z-index: 10;
+        }
+
+        .photo-card.exiting {
+            opacity: 0;
+            transform: scale(0.8) rotateY(10deg) translateX(100px);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Progress dots */
+        .progress-dots {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(254, 249, 231, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: #e8c547;
+            box-shadow: 0 0 10px rgba(232, 197, 71, 0.6);
+            transform: scale(1.2);
+        }
+
+        .progress-dot.viewed {
+            background: rgba(232, 197, 71, 0.6);
+        }
+
+        /* Photo counter */
+        .photo-counter {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: #e8c547;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        /* Continue button */
+        .gallery-continue {
+            margin-top: 25px;
+        }
+
+        /* Hover effect on photo */
+        .photo-frame:hover .photo-card.active {
+            transform: scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(232, 197, 71, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    <div class="sparkles" id="sparkles"></div>
+
+    <section id="section-gallery" class="section section-active">
+        <div class="section-inner">
+            <div class="gallery-container">
+                <h2 class="gallery-title">Some Beautiful Memories</h2>
+                <p class="gallery-hint" id="galleryHint">Tap to see more</p>
+
+                <div class="photo-frame" id="photoFrame">
+                    <div class="photo-card" data-index="0"><img src="./photos/Vishu-1.jpeg" alt="Memory 1"></div>
+                    <div class="photo-card" data-index="1"><img src="./photos/Vishu-2.jpeg" alt="Memory 2"></div>
+                    <div class="photo-card" data-index="2"><img src="./photos/Vishu-3.jpeg" alt="Memory 3"></div>
+                    <div class="photo-card" data-index="3"><img src="./photos/Vishu-4.jpeg" alt="Memory 4"></div>
+                    <div class="photo-card" data-index="4"><img src="./photos/Vishu-5.jpeg" alt="Memory 5"></div>
+                    <div class="photo-card" data-index="5"><img src="./photos/Vishu-6.jpeg" alt="Memory 6"></div>
+                    <div class="photo-card" data-index="6"><img src="./photos/Vishu-7.jpeg" alt="Memory 7"></div>
+                    <div class="photo-card" data-index="7"><img src="./photos/Vishu-8.jpeg" alt="Memory 8"></div>
+                </div>
+
+                <div class="progress-dots" id="progressDots">
+                    <div class="progress-dot" data-index="0"></div>
+                    <div class="progress-dot" data-index="1"></div>
+                    <div class="progress-dot" data-index="2"></div>
+                    <div class="progress-dot" data-index="3"></div>
+                    <div class="progress-dot" data-index="4"></div>
+                    <div class="progress-dot" data-index="5"></div>
+                    <div class="progress-dot" data-index="6"></div>
+                    <div class="progress-dot" data-index="7"></div>
+                </div>
+
+                <div class="photo-counter" id="photoCounter">1 / 8</div>
+
+                <button type="button" class="continue-btn gallery-continue" id="btnContinue" onclick="goToNext()">Continue</button>
+            </div>
+        </div>
+    </section>
+
+    <audio id="bgMusic" loop>
+        <source src="./assets/bg-music.webm" type="audio/webm">
+    </audio>
+    <button type="button" class="music-toggle" id="btnMusicToggle" title="Toggle music" aria-label="Toggle background music">🔊</button>
+
+    <script>
+        (function () {
+            var photoFrame = document.getElementById('photoFrame');
+            var photoCards = document.querySelectorAll('.photo-card');
+            var progressDots = document.querySelectorAll('.progress-dot');
+            var photoCounter = document.getElementById('photoCounter');
+            var galleryHint = document.getElementById('galleryHint');
+            var btnContinue = document.getElementById('btnContinue');
+            var bgMusic = document.getElementById('bgMusic');
+            var btnMusicToggle = document.getElementById('btnMusicToggle');
+            var floatingHeartsContainer = document.getElementById('floatingHearts');
+            var sparklesContainer = document.getElementById('sparkles');
+
+            var currentIndex = 0;
+            var totalPhotos = photoCards.length;
+            var isAnimating = false;
+
+            var sparkleColors = ['#e8c547', '#f5d76e', '#fef9e7', '#ffb6c1', '#ffd700', '#ffe4b5'];
+
+            // Create floating hearts
+            function createFloatingHearts() {
+                var hearts = ['💛', '✨', '💫', '🤍'];
+                var positions = [
+                    { x: 5, y: 15 }, { x: 8, y: 50 }, { x: 3, y: 80 },
+                    { x: 88, y: 20 }, { x: 92, y: 55 }, { x: 85, y: 85 },
+                    { x: 20, y: 8 }, { x: 75, y: 5 },
+                    { x: 15, y: 90 }, { x: 80, y: 92 }
+                ];
+
+                positions.forEach(function(pos, i) {
+                    var heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.textContent = hearts[i % hearts.length];
+                    heart.style.left = pos.x + '%';
+                    heart.style.top = pos.y + '%';
+                    heart.style.animationDelay = (i * 1.5) + 's';
+                    heart.style.animationDuration = (14 + Math.random() * 6) + 's';
+                    floatingHeartsContainer.appendChild(heart);
+                });
+            }
+
+            // Create sparkles burst
+            function createSparkles(x, y, count) {
+                for (var i = 0; i < count; i++) {
+                    var sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = (x + (Math.random() - 0.5) * 150) + 'px';
+                    sparkle.style.top = (y + (Math.random() - 0.5) * 150) + 'px';
+                    sparkle.style.backgroundColor = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+                    sparkle.style.width = (5 + Math.random() * 10) + 'px';
+                    sparkle.style.height = sparkle.style.width;
+                    sparkle.style.animationDuration = (0.6 + Math.random() * 0.6) + 's';
+                    sparklesContainer.appendChild(sparkle);
+
+                    setTimeout(function(el) {
+                        return function() { el.remove(); };
+                    }(sparkle), 1200);
+                }
+            }
+
+            // Update display
+            function updateDisplay() {
+                photoCards.forEach(function(card, i) {
+                    card.classList.remove('active', 'exiting');
+                    if (i === currentIndex) {
+                        card.classList.add('active');
+                    }
+                });
+
+                progressDots.forEach(function(dot, i) {
+                    dot.classList.remove('active', 'viewed');
+                    if (i === currentIndex) {
+                        dot.classList.add('active');
+                    } else if (i < currentIndex) {
+                        dot.classList.add('viewed');
+                    }
+                });
+
+                photoCounter.textContent = (currentIndex + 1) + ' / ' + totalPhotos;
+
+                // Show continue button on last photo
+                if (currentIndex === totalPhotos - 1) {
+                    galleryHint.textContent = 'Last one!';
+                    setTimeout(function() {
+                        btnContinue.classList.add('continue-btn-visible');
+                    }, 500);
+                }
+            }
+
+            // Go to next photo
+            function nextPhoto() {
+                if (isAnimating || currentIndex >= totalPhotos - 1) return;
+                isAnimating = true;
+
+                var currentCard = photoCards[currentIndex];
+                currentCard.classList.add('exiting');
+
+                // Sparkles on transition
+                var rect = photoFrame.getBoundingClientRect();
+                createSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
+
+                setTimeout(function() {
+                    currentCard.classList.remove('active', 'exiting');
+                    currentIndex++;
+                    updateDisplay();
+                    isAnimating = false;
+                }, 400);
+            }
+
+            // Initialize
+            createFloatingHearts();
+            updateDisplay();
+
+            // Restore music position from localStorage
+            var savedTime = parseFloat(localStorage.getItem('bgMusicTime')) || 0;
+            var wasMuted = localStorage.getItem('bgMusicMuted') === 'true';
+
+            bgMusic.volume = 0.4;
+            bgMusic.currentTime = savedTime;
+
+            if (!wasMuted) {
+                bgMusic.play().catch(function () {});
+            } else {
+                btnMusicToggle.textContent = '🔇';
+                btnMusicToggle.classList.add('muted');
+            }
+
+            // Save music position periodically
+            setInterval(function() {
+                if (!bgMusic.paused) {
+                    localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                }
+            }, 500);
+
+            // Save position before leaving page
+            window.addEventListener('beforeunload', function() {
+                localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                localStorage.setItem('bgMusicMuted', bgMusic.paused);
+            });
+
+            // Photo frame click handler
+            photoFrame.addEventListener('click', function() {
+                if (currentIndex < totalPhotos - 1) {
+                    nextPhoto();
+                }
+            });
+
+            // Music toggle handler
+            btnMusicToggle.addEventListener('click', function () {
+                if (bgMusic.paused) {
+                    bgMusic.play().catch(function () {});
+                    btnMusicToggle.textContent = '🔊';
+                    btnMusicToggle.classList.remove('muted');
+                    localStorage.setItem('bgMusicMuted', 'false');
+                } else {
+                    bgMusic.pause();
+                    btnMusicToggle.textContent = '🔇';
+                    btnMusicToggle.classList.add('muted');
+                    localStorage.setItem('bgMusicMuted', 'true');
+                }
+            });
+        })();
+
+        function preloadAssets(assets) {
+            var promises = assets.map(function(asset) {
+                return new Promise(function(resolve) {
+                    if (asset.type === 'video') {
+                        var video = document.createElement('video');
+                        video.preload = 'auto';
+                        video.oncanplaythrough = resolve;
+                        video.onerror = resolve;
+                        video.src = asset.src;
+                        video.load();
+                        setTimeout(resolve, 5000);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            return Promise.all(promises);
+        }
+
+        function goToNext() {
+            var btn = document.getElementById('btnContinue');
+            if (btn) {
+                btn.textContent = 'Loading...';
+                btn.disabled = true;
+            }
+
+            // Preload assets for video2.html
+            var assets = [
+                { type: 'video', src: './HappyBirthdayVishu.mp4' }
+            ];
+
+            preloadAssets(assets).then(function() {
+                window.location.href = 'video2.html';
+            });
+        }
+    </script>
+</body>
+</html>

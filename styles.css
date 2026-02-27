@@ -229,3 +229,18 @@ h1 {
 .music-toggle.muted {
     opacity: 0.7;
 }
+
+/* No response text */
+.no-response {
+    font-size: 1.1rem;
+    color: #5c3d0a;
+    margin: 15px 0 0 0;
+    min-height: 1.5em;
+    font-weight: 500;
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}

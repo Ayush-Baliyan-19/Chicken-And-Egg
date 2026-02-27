@@ -531,14 +531,11 @@
         function preloadAssets(assets) {
             var promises = assets.map(function(asset) {
                 return new Promise(function(resolve) {
-                    if (asset.type === 'video') {
-                        var video = document.createElement('video');
-                        video.preload = 'auto';
-                        video.oncanplaythrough = resolve;
-                        video.onerror = resolve;
-                        video.src = asset.src;
-                        video.load();
-                        setTimeout(resolve, 5000);
+                    if (asset.type === 'image') {
+                        var img = new Image();
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                        img.src = asset.src;
                     } else {
                         resolve();
                     }
@@ -554,13 +551,16 @@
                 btn.disabled = true;
             }
 
-            // Preload assets for video2.html
+            // Preload images for gallery.html
             var assets = [
-                { type: 'video', src: './HappyBirthdayVishu.mp4' }
+                { type: 'image', src: './photos/Vishu-1.jpeg' },
+                { type: 'image', src: './photos/Vishu-2.jpeg' },
+                { type: 'image', src: './photos/Vishu-3.jpeg' },
+                { type: 'image', src: './photos/Vishu-4.jpeg' }
             ];
 
             preloadAssets(assets).then(function() {
-                window.location.href = 'video2.html';
+                window.location.href = 'gallery.html';
             });
         }
     </script>

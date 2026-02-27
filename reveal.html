@@ -17,13 +17,23 @@
 
     <div id="confetti" class="confetti" aria-hidden="true"></div>
 
+    <!-- Tap to play overlay for iOS -->
+    <div id="playOverlay" class="play-overlay" style="display: none;">
+        <button type="button" class="play-btn">▶️ Tap to play</button>
+    </div>
+
+    <!-- Tap to unmute overlay for Safari -->
+    <div id="unmuteOverlay" class="unmute-overlay" style="display: none;">
+        <button type="button" class="unmute-btn">🔊 Tap for sound</button>
+    </div>
+
     <section id="section-video1" class="section">
         <div class="stage">
             <div class="reveal-content">
                 <h1 class="reveal-title">You came first!</h1>
                 <p class="reveal-subtitle">Happy Birthday!</p>
                 <div class="video-container">
-                    <video id="mainVideo" playsinline>
+                    <video id="mainVideo" playsinline webkit-playsinline muted>
                         <source src="./BhaiKaBdday.mp4" type="video/mp4">
                     </video>
                 </div>
@@ -31,6 +41,38 @@
             </div>
         </div>
     </section>
+
+    <style>
+        .unmute-overlay, .play-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .unmute-btn, .play-btn {
+            background: linear-gradient(135deg, #e8c547 0%, #f5d76e 50%, #e8c547 100%);
+            color: #1a1a2e;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(232, 197, 71, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
 
     <script>
         (function () {
@@ -40,9 +82,12 @@
             var confettiEl = document.getElementById('confetti');
             var mainVideo = document.getElementById('mainVideo');
             var btnContinue = document.getElementById('btnContinue');
+            var unmuteOverlay = document.getElementById('unmuteOverlay');
+            var playOverlay = document.getElementById('playOverlay');
 
             var steps = ['1', '2', '3'];
             var step = 0;
+            var videoStarted = false;
 
             function burstConfetti() {
                 var colors = ['#f9e076', '#e8c547', '#c9a227', '#ff9f43', '#ff6b6b', '#a29bfe', '#55efc4', '#fd79a8'];
@@ -60,6 +105,30 @@
                         if (el.parentNode) el.parentNode.removeChild(el);
                     }, 4000 + Math.random() * 1000, c);
                 }
+            }
+
+            function playVideo() {
+                if (!mainVideo || videoStarted) return;
+
+                mainVideo.muted = true;
+                mainVideo.play().then(function() {
+                    videoStarted = true;
+                    if (playOverlay) playOverlay.style.display = 'none';
+
+                    // Try to unmute
+                    setTimeout(function() {
+                        mainVideo.muted = false;
+                        // Check if unmute worked
+                        setTimeout(function() {
+                            if (mainVideo.muted && unmuteOverlay) {
+                                unmuteOverlay.style.display = 'flex';
+                            }
+                        }, 100);
+                    }, 100);
+                }).catch(function() {
+                    // Autoplay blocked - show play button
+                    if (playOverlay) playOverlay.style.display = 'flex';
+                });
             }
 
             function showNextCountdown() {
@@ -80,10 +149,30 @@
                 if (curtainRight) curtainRight.classList.add('curtain-open');
                 burstConfetti();
                 document.getElementById('section-video1').classList.add('section-active');
-                if (mainVideo) {
-                    mainVideo.playbackRate = 1;
-                    mainVideo.play().catch(function () {});
-                }
+                playVideo();
+            }
+
+            // Handle play overlay click
+            if (playOverlay) {
+                playOverlay.addEventListener('click', function() {
+                    if (mainVideo) {
+                        mainVideo.muted = false;
+                        mainVideo.play().then(function() {
+                            videoStarted = true;
+                            playOverlay.style.display = 'none';
+                        }).catch(function() {});
+                    }
+                });
+            }
+
+            // Handle unmute overlay click
+            if (unmuteOverlay) {
+                unmuteOverlay.addEventListener('click', function() {
+                    if (mainVideo) {
+                        mainVideo.muted = false;
+                    }
+                    unmuteOverlay.style.display = 'none';
+                });
             }
 
             setTimeout(showNextCountdown, 300);

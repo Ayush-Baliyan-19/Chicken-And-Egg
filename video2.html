@@ -10,16 +10,58 @@
     <link rel="stylesheet" href="./yes_style.css">
 </head>
 <body>
+    <!-- Tap to play overlay for iOS -->
+    <div id="playOverlay" class="play-overlay" style="display: none;">
+        <button type="button" class="play-btn">▶️ Tap to play</button>
+    </div>
+
+    <!-- Tap to unmute overlay for Safari -->
+    <div id="unmuteOverlay" class="unmute-overlay" style="display: none;">
+        <button type="button" class="unmute-btn">🔊 Tap for sound</button>
+    </div>
+
     <section id="section-video2" class="section section-active">
         <div class="section-inner section-video2-inner">
             <div class="video-container">
-                <video id="video2" playsinline>
+                <video id="video2" playsinline webkit-playsinline muted>
                     <source src="./HappyBirthdayVishu.mp4" type="video/mp4">
                 </video>
             </div>
             <button type="button" class="continue-btn section-video2-continue" id="btnContinue" onclick="goToNext()">And Finally</button>
         </div>
     </section>
+
+    <style>
+        .unmute-overlay, .play-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .unmute-btn, .play-btn {
+            background: linear-gradient(135deg, #e8c547 0%, #f5d76e 50%, #e8c547 100%);
+            color: #1a1a2e;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(232, 197, 71, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
 
     <audio id="bgMusic" loop>
         <source src="./assets/bg-music.webm" type="audio/webm">
@@ -32,6 +74,10 @@
             var btnContinue = document.getElementById('btnContinue');
             var bgMusic = document.getElementById('bgMusic');
             var btnMusicToggle = document.getElementById('btnMusicToggle');
+            var unmuteOverlay = document.getElementById('unmuteOverlay');
+            var playOverlay = document.getElementById('playOverlay');
+
+            var videoStarted = false;
 
             // Restore music position from localStorage but keep it paused during video
             var savedTime = parseFloat(localStorage.getItem('bgMusicTime')) || 0;
@@ -43,13 +89,58 @@
             // Music stays paused during video - toggle button hidden initially
             btnMusicToggle.style.display = 'none';
 
-            // Auto-play video
-            if (video2) {
-                video2.playbackRate = 1;
-                video2.muted = false;
-                video2.play().catch(function () {});
+            function playVideo() {
+                if (!video2 || videoStarted) return;
 
-                // Show continue button and start music when video ends
+                video2.muted = true;
+                video2.play().then(function() {
+                    videoStarted = true;
+                    if (playOverlay) playOverlay.style.display = 'none';
+
+                    // Try to unmute
+                    setTimeout(function() {
+                        video2.muted = false;
+                        // Check if unmute worked
+                        setTimeout(function() {
+                            if (video2.muted && unmuteOverlay) {
+                                unmuteOverlay.style.display = 'flex';
+                            }
+                        }, 100);
+                    }, 100);
+                }).catch(function() {
+                    // Autoplay blocked - show play button
+                    if (playOverlay) playOverlay.style.display = 'flex';
+                });
+            }
+
+            // Handle play overlay click
+            if (playOverlay) {
+                playOverlay.addEventListener('click', function() {
+                    if (video2) {
+                        video2.muted = false;
+                        video2.play().then(function() {
+                            videoStarted = true;
+                            playOverlay.style.display = 'none';
+                        }).catch(function() {});
+                    }
+                });
+            }
+
+            // Handle unmute overlay click
+            if (unmuteOverlay) {
+                unmuteOverlay.addEventListener('click', function() {
+                    if (video2) {
+                        video2.muted = false;
+                    }
+                    unmuteOverlay.style.display = 'none';
+                });
+            }
+
+            // Start video on page load
+            playVideo();
+
+            // Show continue button and start music when video ends
+            if (video2) {
                 video2.addEventListener('ended', function() {
                     if (btnContinue) btnContinue.classList.add('continue-btn-visible');
 
