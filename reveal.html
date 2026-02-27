@@ -17,6 +17,16 @@
 
     <div id="confetti" class="confetti" aria-hidden="true"></div>
 
+    <!-- Floating birthday decorations -->
+    <div class="floating-decor">
+        <span class="decor-item decor-1">🎈</span>
+        <span class="decor-item decor-2">🎉</span>
+        <span class="decor-item decor-3">✨</span>
+        <span class="decor-item decor-4">🎂</span>
+        <span class="decor-item decor-5">🎈</span>
+        <span class="decor-item decor-6">⭐</span>
+    </div>
+
     <!-- Tap to play overlay for iOS -->
     <div id="playOverlay" class="play-overlay" style="display: none;">
         <button type="button" class="play-btn">▶️ Tap to play</button>
@@ -71,6 +81,37 @@
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
+        }
+
+        /* Floating birthday decorations */
+        .floating-decor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+            overflow: hidden;
+        }
+
+        .decor-item {
+            position: absolute;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            opacity: 0.4;
+            animation: floatDecor 6s ease-in-out infinite;
+        }
+
+        .decor-1 { top: 12%; left: 8%; animation-delay: 0s; }
+        .decor-2 { top: 20%; right: 10%; animation-delay: 1s; }
+        .decor-3 { top: 45%; left: 5%; animation-delay: 2s; }
+        .decor-4 { bottom: 25%; right: 8%; animation-delay: 3s; }
+        .decor-5 { bottom: 15%; left: 12%; animation-delay: 4s; }
+        .decor-6 { top: 65%; right: 6%; animation-delay: 5s; }
+
+        @keyframes floatDecor {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(10deg); }
         }
     </style>
 
