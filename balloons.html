@@ -406,9 +406,32 @@
             // Initialize floating hearts
             createFloatingHearts();
 
-            // Start background music
+            // Restore music position from localStorage
+            var savedTime = parseFloat(localStorage.getItem('bgMusicTime')) || 0;
+            var wasMuted = localStorage.getItem('bgMusicMuted') === 'true';
+
             bgMusic.volume = 0.4;
-            bgMusic.play().catch(function () {});
+            bgMusic.currentTime = savedTime;
+
+            if (!wasMuted) {
+                bgMusic.play().catch(function () {});
+            } else {
+                btnMusicToggle.textContent = '🔇';
+                btnMusicToggle.classList.add('muted');
+            }
+
+            // Save music position periodically
+            setInterval(function() {
+                if (!bgMusic.paused) {
+                    localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                }
+            }, 500);
+
+            // Save position before leaving page
+            window.addEventListener('beforeunload', function() {
+                localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                localStorage.setItem('bgMusicMuted', bgMusic.paused);
+            });
 
             // Set first word
             balloonWord.textContent = words[currentIndex];
