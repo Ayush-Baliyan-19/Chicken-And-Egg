@@ -91,13 +91,102 @@
             if (mainVideo) {
                 mainVideo.addEventListener('ended', function () {
                     if (btnContinue) btnContinue.classList.add('continue-btn-visible');
+
+                    // Start background music after video ends
+                    var bgMusic = document.getElementById('bgMusic');
+                    var btnMusicToggle = document.getElementById('btnMusicToggle');
+                    if (bgMusic) {
+                        bgMusic.volume = 0.4;
+                        bgMusic.currentTime = 0;
+                        localStorage.setItem('bgMusicTime', '0');
+                        localStorage.setItem('bgMusicMuted', 'false');
+                        bgMusic.play().catch(function () {});
+
+                        // Save music position periodically
+                        setInterval(function() {
+                            if (!bgMusic.paused) {
+                                localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                            }
+                        }, 500);
+                    }
+
+                    // Show music toggle button
+                    if (btnMusicToggle) {
+                        btnMusicToggle.style.display = 'flex';
+                        btnMusicToggle.addEventListener('click', function () {
+                            if (bgMusic.paused) {
+                                bgMusic.play().catch(function () {});
+                                btnMusicToggle.textContent = '🔊';
+                                btnMusicToggle.classList.remove('muted');
+                                localStorage.setItem('bgMusicMuted', 'false');
+                            } else {
+                                bgMusic.pause();
+                                btnMusicToggle.textContent = '🔇';
+                                btnMusicToggle.classList.add('muted');
+                                localStorage.setItem('bgMusicMuted', 'true');
+                            }
+                        });
+                    }
                 });
             }
+
+            // Save position before leaving page
+            window.addEventListener('beforeunload', function() {
+                var bgMusic = document.getElementById('bgMusic');
+                if (bgMusic) {
+                    localStorage.setItem('bgMusicTime', bgMusic.currentTime);
+                    localStorage.setItem('bgMusicMuted', bgMusic.paused);
+                }
+            });
         })();
 
+        function preloadAssets(assets) {
+            var promises = assets.map(function(asset) {
+                return new Promise(function(resolve) {
+                    if (asset.type === 'image') {
+                        var img = new Image();
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                        img.src = asset.src;
+                    } else if (asset.type === 'audio') {
+                        var audio = new Audio();
+                        audio.preload = 'auto';
+                        audio.oncanplaythrough = resolve;
+                        audio.onerror = resolve;
+                        audio.src = asset.src;
+                        audio.load();
+                        setTimeout(resolve, 3000);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            return Promise.all(promises);
+        }
+
         function goToNext() {
-            window.location.href = 'balloons.html';
+            var btn = document.getElementById('btnContinue');
+            if (btn) {
+                btn.textContent = 'Loading...';
+                btn.disabled = true;
+            }
+
+            // Preload assets for balloons.html
+            var assets = [
+                { type: 'image', src: './assets/balloon.png' },
+                { type: 'image', src: './assets/balloon-popped.png' },
+                { type: 'audio', src: './pop.mp3' }
+            ];
+
+            preloadAssets(assets).then(function() {
+                window.location.href = 'balloons.html';
+            });
         }
     </script>
+
+    <audio id="bgMusic" loop>
+        <source src="./assets/bg-music.webm" type="audio/webm">
+    </audio>
+    <button type="button" class="music-toggle" id="btnMusicToggle" style="display: none;" title="Toggle music" aria-label="Toggle background music">🔊</button>
 </body>
 </html>

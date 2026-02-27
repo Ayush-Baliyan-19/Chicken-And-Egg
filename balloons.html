@@ -528,8 +528,40 @@
             }
         })();
 
+        function preloadAssets(assets) {
+            var promises = assets.map(function(asset) {
+                return new Promise(function(resolve) {
+                    if (asset.type === 'video') {
+                        var video = document.createElement('video');
+                        video.preload = 'auto';
+                        video.oncanplaythrough = resolve;
+                        video.onerror = resolve;
+                        video.src = asset.src;
+                        video.load();
+                        setTimeout(resolve, 5000);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            return Promise.all(promises);
+        }
+
         function goToNext() {
-            window.location.href = 'video2.html';
+            var btn = document.getElementById('btnContinue');
+            if (btn) {
+                btn.textContent = 'Loading...';
+                btn.disabled = true;
+            }
+
+            // Preload assets for video2.html
+            var assets = [
+                { type: 'video', src: './HappyBirthdayVishu.mp4' }
+            ];
+
+            preloadAssets(assets).then(function() {
+                window.location.href = 'video2.html';
+            });
         }
     </script>
 </body>
