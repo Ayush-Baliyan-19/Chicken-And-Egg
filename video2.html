@@ -10,11 +10,6 @@
     <link rel="stylesheet" href="./yes_style.css">
 </head>
 <body>
-    <!-- Tap to play overlay for iOS -->
-    <div id="playOverlay" class="play-overlay" style="display: none;">
-        <button type="button" class="play-btn">▶️ Tap to play</button>
-    </div>
-
     <!-- Tap to unmute overlay for Safari -->
     <div id="unmuteOverlay" class="unmute-overlay" style="display: none;">
         <button type="button" class="unmute-btn">🔊 Tap for sound</button>
@@ -32,7 +27,7 @@
     </section>
 
     <style>
-        .unmute-overlay, .play-overlay {
+        .unmute-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -44,7 +39,7 @@
             justify-content: center;
             z-index: 1000;
         }
-        .unmute-btn, .play-btn {
+        .unmute-btn {
             background: linear-gradient(135deg, #e8c547 0%, #f5d76e 50%, #e8c547 100%);
             color: #1a1a2e;
             border: none;
@@ -75,7 +70,6 @@
             var bgMusic = document.getElementById('bgMusic');
             var btnMusicToggle = document.getElementById('btnMusicToggle');
             var unmuteOverlay = document.getElementById('unmuteOverlay');
-            var playOverlay = document.getElementById('playOverlay');
 
             var videoStarted = false;
 
@@ -95,7 +89,6 @@
                 video2.muted = true;
                 video2.play().then(function() {
                     videoStarted = true;
-                    if (playOverlay) playOverlay.style.display = 'none';
 
                     // Try to unmute
                     setTimeout(function() {
@@ -107,23 +100,7 @@
                             }
                         }, 100);
                     }, 100);
-                }).catch(function() {
-                    // Autoplay blocked - show play button
-                    if (playOverlay) playOverlay.style.display = 'flex';
-                });
-            }
-
-            // Handle play overlay click
-            if (playOverlay) {
-                playOverlay.addEventListener('click', function() {
-                    if (video2) {
-                        video2.muted = false;
-                        video2.play().then(function() {
-                            videoStarted = true;
-                            playOverlay.style.display = 'none';
-                        }).catch(function() {});
-                    }
-                });
+                }).catch(function() {});
             }
 
             // Handle unmute overlay click
